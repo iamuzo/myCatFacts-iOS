@@ -11,6 +11,7 @@ import UIKit
 class CatFactTableViewController: UITableViewController {
     
     // MARK:- Properties
+    private var currentPage = 0
     var catFacts: [CatFact] = [] {
         didSet {
             tableView.reloadData()
@@ -33,7 +34,8 @@ class CatFactTableViewController: UITableViewController {
     
     // MARK:- CUSTOM METHODS
     func fetchFacts() {
-        CatFactController.fetchCatFacts(page: 1) { (result) in
+        currentPage += 1
+        CatFactController.fetchCatFacts(page: currentPage) { (result) in
             DispatchQueue.main.async {
                 switch result {
                     case .success(let returnedResult):
@@ -92,6 +94,10 @@ class CatFactTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == catFacts.count - 1 {
+            fetchFacts()
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "catCell", for: indexPath)
         let catFact = catFacts[indexPath.row]
         let catFactID = catFact.id ?? 0
